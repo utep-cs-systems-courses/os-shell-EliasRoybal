@@ -1,13 +1,9 @@
 import os, sys, re
 
-pid = os.getpid()
-
 def initialPrompt():
-    while True:
+    while 1:
         currDirectoryPrompt = os.getcwd() +" $ " #includes current directory with '$'
-        
         prompt = os.write(1, (currDirectoryPrompt).encode())
-
         if 'PS1' in os.environ:
             prompt = os.environ['PS1']
         
@@ -29,7 +25,7 @@ def commandHandler(args):
         try:
             os.chdir(args[1])
         except FileNotFoundError:
-            print("No such directory founds")
+            print("No such directory found")
         except IndexError: # no argument after 'cd'
             pass
         
@@ -40,7 +36,6 @@ def commandHandler(args):
             os.write(2, ("fork failed, returning %d\n" % rc).encode())
             return
         elif rc == 0:  # child
-            os.write(1,"\n".encode())
             for dir in re.split(":", os.environ['PATH']): # try each directory in the path
                 program = "%s/%s" % (dir, args[0])
                 try:
@@ -49,5 +44,5 @@ def commandHandler(args):
                     pass                              # ...fail quietly
                 except Exception:
                     pass
-            os.write(1, "Command not found\n".encode())
+            os.write(1, "Command not found".encode())
 initialPrompt()
